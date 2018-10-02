@@ -169,7 +169,8 @@ namespace realsense2_camera
         bool _align_depth;
         bool _sync_frames;
         bool _pointcloud;
-		PipelineSyncer _syncer;
+	PipelineSyncer _syncer;
+	double _transmission_delay;
 
         std::map<stream_index_pair, cv::Mat> _depth_aligned_image;
         std::map<stream_index_pair, std::string> _depth_aligned_encoding;

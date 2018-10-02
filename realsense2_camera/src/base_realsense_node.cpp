@@ -105,6 +105,8 @@ void BaseRealSenseNode::getParameters()
     _pnh.param("enable_sync", _sync_frames, SYNC_FRAMES);
     if (_pointcloud || _align_depth)
         _sync_frames = true;
+    _pnh.param("transmission_delay", _transmission_delay, 0.0);
+    _transmission_delay /= 1000;
 
     _pnh.param("json_file_path", _json_file_path, std::string(""));
 
@@ -210,6 +212,7 @@ void BaseRealSenseNode::setupDevice()
         ROS_INFO_STREAM("Enable PointCloud: " << ((_pointcloud)?"On":"Off"));
         ROS_INFO_STREAM("Align Depth: " << ((_align_depth)?"On":"Off"));
         ROS_INFO_STREAM("Sync Mode: " << ((_sync_frames)?"On":"Off"));
+	ROS_INFO_STREAM("Transmission delay set to: " << _transmission_delay*1000 << "ms");
 
         auto dev_sensors = _dev.query_sensors();
 
@@ -566,6 +569,7 @@ void BaseRealSenseNode::setupStreams()
                     t = ros::Time::now();
                 else
                     t = ros::Time(_ros_time_base.toSec()+ (/*ms*/ frame.get_timestamp() - /*ms*/ _camera_time_base) / /*ms to seconds*/ 1000);
+		t -= ros::Duration(_transmission_delay);
 
                 std::map<stream_index_pair, bool> is_frame_arrived(_is_frame_arrived);
                 std::vector<rs2::frame> frames;
